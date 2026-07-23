@@ -5,4 +5,8 @@
     <string name="register_caps">REGISTER</string>
     <string name="start_disclaimer">By clicking any of these buttons you confirm that you agree and have read our %1$s</string>
     <string name="tos">Terms of Service</string>
+    <string name="register_disclaimer">ECHO would never ask for your password outside the app.</string>
+    <string name="login_entry_hint">Username/Email</string>
+    <string name="login_password_entry_hint">Password</string>
+    <string name="login_forgot_password">Forgot password? 💀</string>
 </resources>

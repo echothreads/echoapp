@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.echo.app.ui.theme.EchoTheme
-import com.echo.app.feature.auth.LoginScreen
+import com.echo.app.feature.auth.WelcomeScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,9 +19,7 @@ class MainActivity : ComponentActivity() {
             EchoTheme {
                 Scaffold() { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        LoginScreen({ handle, password ->
-                            println("Logging in with $handle")
-                        })
+                        WelcomeScreen()
                     }
                 }
             }
