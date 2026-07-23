@@ -3,5 +3,6 @@
     <string name="welcome_message">Welcome to the ultimate digital %1$s Chamber. Experience a complete social ecosystem built exclusively for your interaction.</string>
     <string name="login_caps">LOGIN</string>
     <string name="register_caps">REGISTER</string>
-    <string name="start_disclaimer">By clicking any of these buttons you confirm that you agree and have read our Terms of Service</string>
+    <string name="start_disclaimer">By clicking any of these buttons you confirm that you agree and have read our %1$s</string>
+    <string name="tos">Terms of Service</string>
 </resources>
