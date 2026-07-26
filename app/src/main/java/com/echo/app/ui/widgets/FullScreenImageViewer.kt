@@ -39,6 +39,7 @@ fun FullScreenImageViewer(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = false,
             dismissOnBackPress = true
         )
     ) {
@@ -100,7 +101,7 @@ fun FullScreenImageViewer(
                 onClick = onDismiss,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(top = 32.dp, start = 16.dp)
+                    .statusBarsPadding()
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_close),
