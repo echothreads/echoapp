@@ -1,5 +1,7 @@
 package com.echo.app.feature.feed.presentation
 
+import android.R.attr.scaleX
+import android.R.attr.scaleY
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -7,21 +9,45 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.echo.app.feature.feed.data.DummyFeedRepository
 import com.echo.app.feature.feed.domain.PostModel
 import com.echo.app.ui.theme.EchoTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FeedScreen(globalPadding: PaddingValues) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
+        state = rememberTopAppBarState()
+    )
     val posts = DummyFeedRepository().getDummyPosts()
-    Scaffold() { localPadding ->
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            TopAppBar(
+                title = { Text("Feed") },
+                scrollBehavior = scrollBehavior
+            )
+        }
+    ) { localPadding ->
         FeedScroller(posts,
             contentPadding = PaddingValues(
                 top = localPadding.calculateTopPadding(),
