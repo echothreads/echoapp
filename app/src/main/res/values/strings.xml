@@ -2,4 +2,12 @@
     <string name="app_name">Echo</string>
     <string name="app_name_caps">ECHO</string>
 
+    <!-- Feed Card -->
+    <string name="verified">Verified</string>
+    <string name="post_attachment">Post Attachment</string>
+    <string name="like">Like</string>
+    <string name="unlike">Unlike</string>
+    <string name="dislike">Dislike</string>
+    <string name="comments">Comments</string>
+    <string name="share">Share</string>
 </resources>
