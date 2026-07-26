@@ -34,15 +34,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             EchoTheme {
-                Scaffold(bottomBar = { FloatingNavigationBar(navController) }) { innerPadding ->
+                Scaffold(bottomBar = { FloatingNavigationBar(navController) }) { globalPadding ->
                     NavHost(
                         navController,
                         startDestination = MainGraph,
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.fillMaxSize()
                     ) {
                         navigation<MainGraph>(startDestination = FeedRoute) {
                             composable<FeedRoute> {
-                                FeedScreen()
+                                FeedScreen(globalPadding)
                             }
 
                             composable<SearchRoute> {

@@ -19,18 +19,24 @@ import com.echo.app.feature.feed.domain.PostModel
 import com.echo.app.ui.theme.EchoTheme
 
 @Composable
-fun FeedScreen() {
+fun FeedScreen(globalPadding: PaddingValues) {
     val posts = DummyFeedRepository().getDummyPosts()
-    Box() {
-        FeedScroller(posts)
+    Scaffold() { localPadding ->
+        FeedScroller(posts,
+            contentPadding = PaddingValues(
+                top = localPadding.calculateTopPadding(),
+                bottom = globalPadding.calculateBottomPadding(),
+                start = 16.dp,
+                end = 16.dp
+            ))
     }
 }
 
 @Composable
-fun FeedScroller(posts: List<PostModel>) {
+fun FeedScroller(posts: List<PostModel>, contentPadding: PaddingValues = PaddingValues(0.dp)) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = contentPadding,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -57,8 +63,8 @@ fun FeedScroller(posts: List<PostModel>) {
 fun FeedScreenPreview() {
     EchoTheme() {
         Scaffold() { innerPadding ->
-            Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-                FeedScreen()
+            Box(modifier = Modifier.fillMaxSize()) {
+                FeedScreen(innerPadding)
             }
         }
     }

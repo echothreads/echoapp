@@ -30,14 +30,15 @@ fun FloatingNavigationBar(navController: NavController) {
 //    val currentDestination = navBackStackEntry?.destination
     val test = navController.currentDestination
     Surface(
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
         modifier = Modifier
             .windowInsetsPadding(WindowInsets.navigationBars)
-            .padding(horizontal = 16.dp, vertical = 16.dp) // Pushes it off the edges
-            .clip(RoundedCornerShape(24.dp)),              // Pill shape
+            .padding(horizontal = 16.dp, vertical = 8.dp) // Pushes it off the edges
+            .clip(RoundedCornerShape(24.dp)), // Pill shape
         shadowElevation = 8.dp
     ) {
         NavigationBar(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
             tonalElevation = 0.dp
         ) {
             Row(
@@ -196,7 +197,7 @@ fun FloatingNavigationBarExample() {
         Scaffold(bottomBar = { FloatingNavigationBar(navController) }) { innerPadding ->
             Box(modifier = Modifier
                 .padding(bottom = innerPadding.calculateBottomPadding() + 24.dp)) {
-                FeedScreen()
+                FeedScreen(innerPadding)
             }
         }
     }

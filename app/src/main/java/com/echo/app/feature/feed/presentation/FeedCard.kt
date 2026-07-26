@@ -76,7 +76,7 @@ fun FeedCard(username: String, timestamp: Instant, postContent: String, postImag
             .border(width = 1.dp, color = MaterialTheme.colorScheme.surfaceContainerHighest, shape = RoundedCornerShape(8.dp)),
         shape = RoundedCornerShape(8.dp)
     ) {
-        Column(modifier = Modifier.padding(horizontal = 24.dp, vertical = 24.dp)) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
             Row() {
                 AsyncImage(
                     model = profilePic,
