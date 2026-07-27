@@ -39,6 +39,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -70,7 +71,7 @@ import com.echo.app.ui.theme.EchoTheme
 fun UserProfileScreen(user: ProfileDto, viewModel: UserProfileScreenViewModel = viewModel()) {
     val state by viewModel.uiState.collectAsState()
     val listState = rememberLazyListState()
-    var selectedTabIndex by remember { mutableIntStateOf(0) }
+    var selectedTab by remember { mutableStateOf(ProfileTabType.POSTS) }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     val shouldLoadMore by remember {
@@ -84,11 +85,13 @@ fun UserProfileScreen(user: ProfileDto, viewModel: UserProfileScreenViewModel = 
 
     LaunchedEffect(shouldLoadMore) {
         if (shouldLoadMore) {
-            when (selectedTabIndex) {
-                0 -> viewModel.loadNextPage(ProfileTabType.POSTS)
-                1 -> viewModel.loadNextPage(ProfileTabType.REPLIES)
-                2 -> viewModel.loadNextPage(ProfileTabType.REPOSTS)
-            }
+            viewModel.loadNextPage(selectedTab)
+        }
+    }
+
+    LaunchedEffect(selectedTab) {
+        if (listState.firstVisibleItemIndex > 0) {
+            listState.scrollToItem(1)
         }
     }
 
@@ -119,17 +122,18 @@ fun UserProfileScreen(user: ProfileDto, viewModel: UserProfileScreenViewModel = 
         ) {
             item {
                 ProfileHeader(user)
-                ContentTabSelector(selectedTabIndex,
-                    onTabSelected = {selected ->
-                        if (selectedTabIndex != selected) {
-                            selectedTabIndex = selected
-                            when (selectedTabIndex) {
-                                0 -> viewModel.switchTab(ProfileTabType.POSTS)
-                                1 -> viewModel.switchTab(ProfileTabType.REPLIES)
-                                2 -> viewModel.switchTab(ProfileTabType.REPOSTS)
-                            }
+            }
+
+            stickyHeader {
+                ContentTabSelector(selectedTabIndex = selectedTab.ordinal,
+                    onTabSelected = {newSelected ->
+                        val newTab = ProfileTabType.entries[newSelected]
+                        if (selectedTab != newTab) {
+                            selectedTab = newTab
+                            viewModel.switchTab(newTab)
                         }
-                    })
+                    }
+                )
             }
 
             items(state.posts, key = { post -> post.id }) { post ->
@@ -140,24 +144,49 @@ fun UserProfileScreen(user: ProfileDto, viewModel: UserProfileScreenViewModel = 
                 }
             }
 
-            if (state.isLoading) {
-                item {
-                    Box(
-                        modifier = Modifier.fillMaxWidth().padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
+            item {
+                when {
+                    // Initial Loading: Empty list + Loading -> Full Screen Spinner
+                    state.posts.isEmpty() && state.isLoading -> {
+                        Box(
+                            modifier = Modifier.fillMaxWidth().fillParentMaxHeight(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
                     }
-                }
-            }
 
-            if (state.isEndOfFeed) {
-                item {
-                    Text(
-                        text = "No more posts to show.",
-                        modifier = Modifier.fillMaxWidth().padding(16.dp),
-                        textAlign = TextAlign.Center
-                    )
+                    // No Posts: Empty list + Not Loading -> Full Screen Text
+                    state.posts.isEmpty() && !state.isLoading -> {
+                        Box(
+                            modifier = Modifier.fillMaxWidth().fillParentMaxHeight(),
+                            contentAlignment = Alignment.TopCenter
+                        ) {
+                            Text(
+                                text = "No posts yet.",
+                                modifier = Modifier.padding(32.dp)
+                            )
+                        }
+                    }
+
+                    // Pagination Loading: Has Posts + Loading -> Small Bottom Spinner
+                    state.isLoading -> {
+                        Box(
+                            modifier = Modifier.fillMaxWidth().padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+
+                    // End of Feed: Has Posts + Reached End -> Small Bottom Text
+                    state.isEndOfFeed -> {
+                        Text(
+                            text = "No more posts to show.",
+                            modifier = Modifier.fillMaxWidth().padding(16.dp),
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
         }
