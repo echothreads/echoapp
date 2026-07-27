@@ -31,14 +31,14 @@ import androidx.compose.ui.unit.sp
 import com.echo.app.feature.feed.data.DummyFeedRepository
 import com.echo.app.feature.feed.domain.PostModel
 import com.echo.app.ui.theme.EchoTheme
+import kotlin.time.Clock
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FeedScreen(globalPadding: PaddingValues) {
+fun FeedScreen(globalPadding: PaddingValues, posts: List<PostModel>) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         state = rememberTopAppBarState()
     )
-    val posts = DummyFeedRepository().getDummyPosts()
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -78,10 +78,27 @@ fun FeedScroller(posts: List<PostModel>, contentPadding: PaddingValues = Padding
 )
 @Composable
 fun FeedScreenPreview() {
+
+    val previewPosts = List(3) { index ->
+        PostModel(
+            id = "preview_$index",
+            authorId = "user1",
+            authorUsername = "test_user",
+            authorProfilePic = "https://randomuser.me/api/portraits/med/men/1.jpg",
+            isVerified = true,
+            content = "This is a preview post number $index",
+            imageUrl = null,
+            timestamp = Clock.System.now(),
+            score = 100,
+            comments = 10,
+            amplifies = 5
+        )
+    }
+
     EchoTheme() {
         Scaffold() { innerPadding ->
             Box(modifier = Modifier.fillMaxSize()) {
-                FeedScreen(innerPadding)
+                FeedScreen(innerPadding, previewPosts)
             }
         }
     }

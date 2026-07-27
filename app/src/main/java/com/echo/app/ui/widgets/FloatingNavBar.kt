@@ -197,7 +197,7 @@ fun FloatingNavigationBarExample() {
         Scaffold(bottomBar = { FloatingNavigationBar(navController) }) { innerPadding ->
             Box(modifier = Modifier
                 .padding(bottom = innerPadding.calculateBottomPadding() + 24.dp)) {
-                FeedScreen(innerPadding)
+                Text("Test for floating nav")
             }
         }
     }
