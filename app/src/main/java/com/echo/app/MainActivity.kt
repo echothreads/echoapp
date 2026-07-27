@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
 
                             composable<PostRoute> {
                                 Box(modifier = Modifier.fillMaxSize()) {
-                                    FeedCard("ender1324", Instant.fromEpochSeconds(1784901564), "Excited for my new trip to tel aviv, might try some cuisine", null, 60, 850, 6000, true)
+                                    Text("New Post")
                                 }
                             }
 

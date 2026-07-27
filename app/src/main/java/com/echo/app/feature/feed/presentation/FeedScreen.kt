@@ -67,16 +67,7 @@ fun FeedScroller(posts: List<PostModel>, contentPadding: PaddingValues = Padding
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(posts, key = { post -> post.id }){ post ->
-            FeedCard(
-                username = post.username,
-                timestamp = post.timestamp,
-                postContent = post.content,
-                postImage = post.imageUrl,
-                score = post.score,
-                comments = post.comments,
-                amplifies = post.amplifies,
-                isVerified = post.isVerified
-            )
+            FeedCard(post)
         }
     }
 }

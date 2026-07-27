@@ -11,6 +11,7 @@ import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -35,6 +36,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -53,23 +55,26 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.echo.app.R
 import com.echo.app.Utils
+import com.echo.app.feature.feed.domain.PostModel
 import com.echo.app.ui.theme.EchoTheme
 import com.echo.app.ui.widgets.FullScreenImageViewer
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
-import kotlin.time.Instant
 
 @Composable
-fun FeedCard(username: String, timestamp: Instant, postContent: String, postImage: String?, score: Int, comments: Int, amplifies: Int, isVerified: Boolean = false, profilePic: String? = null) {
+fun FeedCard(post: PostModel) {
     var showFullScreenImage by remember { mutableStateOf(false) }
     ElevatedCard(
         modifier = Modifier.fillMaxWidth()
@@ -79,7 +84,7 @@ fun FeedCard(username: String, timestamp: Instant, postContent: String, postImag
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
             Row() {
                 AsyncImage(
-                    model = profilePic,
+                    model = post.authorProfilePic,
                     modifier = Modifier.size(48.dp),
                     contentDescription = "Account",
                     placeholder = painterResource(R.drawable.outline_account_circle),
@@ -88,21 +93,21 @@ fun FeedCard(username: String, timestamp: Instant, postContent: String, postImag
                 )
                 Spacer(modifier = Modifier.size(8.dp))
                 Column() {
-                    // HEAD: Username, labels, timestamp, options
+                    // HEADER: Username, labels, timestamp, options
                     Row(modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween) {
                         Row(modifier = Modifier.weight(1f, fill = false),
                             verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                username,
+                                post.authorUsername,
                                 modifier = Modifier.weight(1f, fill = false),
                                 fontWeight = FontWeight.Bold,
                                 overflow = TextOverflow.Ellipsis,
                                 maxLines = 1
                             )
                             Spacer(modifier = Modifier.width(2.dp))
-                            if (isVerified) {
+                            if (post.isVerified) {
                                 Icon(
                                     painterResource(R.drawable.ic_verified),
                                     contentDescription = stringResource(R.string.verified),
@@ -114,7 +119,7 @@ fun FeedCard(username: String, timestamp: Instant, postContent: String, postImag
 
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                Utils.getTimeAgo(timestamp),
+                                Utils.getTimeAgo(post.timestamp),
                                 maxLines = 1,
                                 textAlign = TextAlign.End,
                                 style = LocalTextStyle.current.copy(
@@ -140,14 +145,95 @@ fun FeedCard(username: String, timestamp: Instant, postContent: String, postImag
                             }
                         }
                     }
+
+                    // CONTEXT: REPOSTED OR REPLY?
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        when {
+                            // 1. REPOST
+                            post.repostedByUsername != null -> {
+                                Icon(
+                                    painterResource(R.drawable.ic_reposted),
+                                    contentDescription = stringResource(R.string.amplified_icon),
+                                    modifier = Modifier.padding(end = 4.dp).size(16.dp)
+                                )
+                                Text(buildAnnotatedString {
+                                    val nameStr = post.repostedByUsername
+                                    val str = stringResource(R.string.amplified_ui, nameStr)
+                                    val nameIndex = str.indexOf(nameStr)
+
+                                    append(str)
+                                    addStyle(SpanStyle(color = MaterialTheme.colorScheme.primary),
+                                        start = nameIndex,
+                                        end = nameStr.length + nameIndex)
+                                }, fontSize = 14.sp)
+                            }
+
+                            // 2. REPLY WITH QUOTE
+                            post.inReplyToPostId != null && post.inReplyToUsername != null && post.inReplyToSnippet != null -> {
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = MaterialTheme.colorScheme.surfaceContainer,
+                                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceContainerHighest),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 4.dp, bottom = 8.dp)
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.fillMaxWidth().padding(12.dp)) {
+                                        Column(modifier = Modifier.weight(1f, fill = true)) {
+                                            Text(
+                                                text = "@${post.inReplyToUsername}",
+                                                style = MaterialTheme.typography.labelMedium,
+                                                fontWeight = FontWeight.Bold,
+                                                color = MaterialTheme.colorScheme.primary
+                                            )
+
+                                            Spacer(modifier = Modifier.height(4.dp))
+
+                                            Text(
+                                                text = post.inReplyToSnippet,
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                maxLines = 3,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        }
+                                        Icon(painterResource(R.drawable.ic_reply),
+                                            contentDescription = stringResource(R.string.reply_icon),
+                                            modifier = Modifier.size(20.dp).align(Alignment.Top))
+                                    }
+                                }
+                            }
+
+                            // 3. REPLY WITHOUT QUOTE
+                            post.inReplyToPostId != null && post.inReplyToUsername != null -> {
+                                Icon(
+                                    painterResource(R.drawable.ic_reply),
+                                    contentDescription = stringResource(R.string.reply_icon), // Fixed copy-paste bug here
+                                    modifier = Modifier.padding(end = 4.dp).size(16.dp)
+                                )
+                                Text(buildAnnotatedString {
+                                    val nameStr = post.inReplyToUsername
+                                    val str = stringResource(R.string.post_reply_to_ui, nameStr)
+                                    val nameIndex = str.indexOf(nameStr)
+
+                                    append(str)
+                                    addStyle(SpanStyle(color = MaterialTheme.colorScheme.primary),
+                                        start = nameIndex,
+                                        end = nameStr.length + nameIndex)
+                                }, fontSize = 14.sp)
+                            }
+                        }
+                    }
+
                     // CONTENT: Text, images
                     Column() {
-                        Text(postContent,
+                        Text(post.content,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 10)
-                        if (postImage != null) {
+                        if (post.imageUrl != null) {
                             Spacer(Modifier.height(16.dp))
-                            FeedImage(postImage,
+                            FeedImage(post.imageUrl,
                                 modifier = Modifier.clickable(onClick = { showFullScreenImage = true }))
                             Spacer(Modifier.height(16.dp))
                         }
@@ -155,11 +241,11 @@ fun FeedCard(username: String, timestamp: Instant, postContent: String, postImag
                     // ACTIONS: Like, Comment, Amplify (repost)
                     Row(verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center) {
-                        LikeDislikeCounter(score)
+                        LikeDislikeCounter(post.score)
                         Spacer(Modifier.width(8.dp))
-                        CommentCounter(comments, {})
+                        CommentCounter(post.comments, {})
                         Spacer(Modifier.width(8.dp))
-                        RepostCounter(reposts = amplifies, {})
+                        RepostCounter(reposts = post.amplifies, {})
                         Spacer(modifier = Modifier.weight(1f))
                         IconButton({}) {
                             Icon(painterResource(R.drawable.ic_send),
@@ -171,9 +257,9 @@ fun FeedCard(username: String, timestamp: Instant, postContent: String, postImag
             }
         }
     }
-    if (showFullScreenImage && postImage != null) {
+    if (showFullScreenImage && post.imageUrl != null) {
         FullScreenImageViewer(
-            imageUrl = postImage,
+            imageUrl = post.imageUrl,
             onDismiss = { showFullScreenImage = false }
         )
     }
@@ -327,10 +413,26 @@ fun RepostCounter(reposts: Int, onClick: () -> Unit) {
 )
 @Composable
 fun FeedCardPreview() {
+    val testPost = PostModel(
+        id = "12",
+        authorId = "1",
+        authorUsername = "ender1324",
+        authorProfilePic = "https://images-ext-1.discordapp.net/external/bO05h5jmNLk9leh1S_TBmrHLdYkIB2ASA3PvOIZFto4/%3Fsize%3D4096/https/cdn.discordapp.com/avatars/485486853063966742/e3cbf4a91c990bbc3b1eae53a7dee911.png?format=webp&quality=lossless&width=1020&height=1020",
+        isVerified = true,
+        content = "I was in Russia today, was surprised to hear that the local market did not have vodka, i will not be visiting Norilsk again",
+        imageUrl = "https://preview.redd.it/moscows-depression-is-upon-us-and-its-hard-to-cope-being-an-v0-7qkqnbqu2h3g1.jpeg?auto=webp&s=75b604a9c74feb830b4a90b43a831f5273c0927a",
+        timestamp = Clock.System.now(),
+        score = 95643,
+        comments = 5435,
+        amplifies = 120043,
+        inReplyToPostId = "123",
+        inReplyToUsername = "parker254",
+        inReplyToSnippet = null
+    )
     EchoTheme {
         Scaffold { innerPadding ->
             Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-                FeedCard("ender1324", Clock.System.now(), "Excited for my new trip, might try some cuisine", null, 658493, 850, 6000, true)
+                FeedCard(testPost)
             }
         }
     }

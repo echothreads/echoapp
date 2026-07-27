@@ -10,4 +10,28 @@
     <string name="dislike">Dislike</string>
     <string name="comments">Comments</string>
     <string name="share">Share</string>
+    <string name="amplified_icon">Amplified Icon</string>
+    <string name="amplified_ui">Amplified by %1$s</string>
+    <string name="reply_icon">Reply Icon</string>
+    <string name="post_reply_to_ui">Reply to %1$s</string>
+
+    <!-- User Profile -->
+    <string name="profile_picture">Profile Picture</string>
+    <string name="profile_banner">Profile Banner</string>
+    <string name="message">Message</string>
+    <string name="follow">Follow</string>
+    <string name="unfollow">Unfollow</string>
+
+    <string name="followedby_1">Followed by %1$s</string>
+    <string name="followedby_2">Followed by %1$s and %2$s</string>
+    <plurals name="followedby_more">
+        <item quantity="one">Followed by %1$s, %2$s and %3$d other you follow</item>
+        <item quantity="other">Followed by %1$s, %2$s and %3$d others you follow</item>
+    </plurals>
+    <string name="followers">%1$s Followers</string>
+    <string name="following">%1$s Following</string>
+
+    <string name="posts">Posts</string>
+    <string name="replies">Replies</string>
+    <string name="amplifies">Amplifies</string>
 </resources>

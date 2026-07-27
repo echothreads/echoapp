@@ -31,7 +31,9 @@ class DummyFeedRepository {
 
             PostModel(
                 id = "post_$index",
-                username = randomUser,
+                authorId = "$index",
+                authorUsername = randomUser,
+                authorProfilePic = "https://randomuser.me/api/portraits/med/men/$index.jpg",
                 isVerified = Random.nextBoolean(),
                 content = randomText,
                 imageUrl = if (hasImage) "https://picsum.photos/seed/$index/800/600" else null,

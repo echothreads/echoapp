@@ -2,12 +2,23 @@ package com.echo.app.feature.feed.data
 
 data class PostDto(
     val id: String,
-    val username: String,
-    val isVerified: Boolean,
     val contentText: String,
     val mediaUrl: String?,
     val timestamp: String,
-    val stats: PostStatsDto
+    val stats: PostStatsDto,
+
+    val authorId: String,
+    val authorUsername: String,
+    val authorProfilePic: String?,
+    val isVerified: Boolean,
+
+    // is reply?
+    val inReplyToPostId: String? = null,
+    val inReplyToUsername: String? = null,
+    val inReplyToSnippet: String? = null,
+
+    // is it a repost?
+    val repostedByUsername: String? = null,
 )
 
 data class PostStatsDto(

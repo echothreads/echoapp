@@ -27,7 +27,7 @@ object Utils {
     /**
      * Converts big numbers to short decimal strings
      */
-    fun formatNumber(number: Int): String {
+    fun formatNumber(number: Number): String {
         val formatter = CompactDecimalFormat.getInstance(
             Locale.getDefault(),
             CompactDecimalFormat.CompactStyle.SHORT
