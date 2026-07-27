@@ -1,5 +1,10 @@
 package com.echo.app.feature.profile.presentation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -83,6 +88,13 @@ fun UserProfileScreen(user: ProfileDto, viewModel: UserProfileScreenViewModel = 
         }
     }
 
+    val isBelowHeader by remember {
+        derivedStateOf {
+            // First item is header so if we're above it, its below
+            listState.firstVisibleItemIndex > 0
+        }
+    }
+
     LaunchedEffect(shouldLoadMore) {
         if (shouldLoadMore) {
             viewModel.loadNextPage(selectedTab)
@@ -90,14 +102,22 @@ fun UserProfileScreen(user: ProfileDto, viewModel: UserProfileScreenViewModel = 
     }
 
     LaunchedEffect(selectedTab) {
-        if (listState.firstVisibleItemIndex > 0) {
+        if (isBelowHeader) {
             listState.scrollToItem(1)
         }
     }
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = { TopAppBar(title = { Text("Profile")},
+        topBar = { TopAppBar(title = {
+            AnimatedVisibility(
+                visible = isBelowHeader,
+                enter = fadeIn() + slideInVertically(),
+                exit = fadeOut() + slideOutVertically()
+            ) {
+                Text(user.displayName)
+            }
+        },
             navigationIcon = {
                 IconButton(onClick = { }) {
                     Icon(painterResource(R.drawable.arrow_back),
