@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
@@ -32,6 +33,7 @@ import com.echo.app.R
 @Composable
 fun FeedImage(
     imageUrl: String,
+    roundingSize: Dp = 8.dp,
     modifier: Modifier = Modifier
 ) {
     val painter = rememberAsyncImagePainter(model = imageUrl)
@@ -43,9 +45,9 @@ fun FeedImage(
             .border(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(roundingSize)
             )
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(roundingSize))
             .background(MaterialTheme.colorScheme.surfaceContainer)
             .then(if(state is AsyncImagePainter.State.Success) modifier else Modifier),
         contentAlignment = Alignment.Center

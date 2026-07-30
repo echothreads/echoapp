@@ -1,10 +1,12 @@
 package com.echo.app.feature.chat.presentation
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -30,7 +32,9 @@ import androidx.compose.ui.unit.sp
 import com.echo.app.R
 import com.echo.app.feature.chat.domain.MessageModel
 import com.echo.app.feature.chat.domain.MessageStatus
+import com.echo.app.feature.feed.presentation.FeedImage
 import com.echo.app.ui.theme.EchoTheme
+import com.echo.app.ui.widgets.FullScreenImageViewer
 
 @Composable
 fun MessageBubble(message: MessageModel) {
@@ -39,6 +43,9 @@ fun MessageBubble(message: MessageModel) {
     var showTimestamp by remember { mutableStateOf(false) }
     val density = LocalDensity.current
     val minWidthThresholdPx = with(density) { 60.dp.toPx() }
+
+    // Image Viewer
+    var showFullScreenImage by remember { mutableStateOf(false) }
 
     // Align right if it's from user, left if it's from other
     val alignment = if (message.incoming) Alignment.CenterStart else Alignment.CenterEnd
@@ -62,8 +69,15 @@ fun MessageBubble(message: MessageModel) {
             tonalElevation = 1.dp
         ) {
             Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                horizontalAlignment = Alignment.End
+                horizontalAlignment = Alignment.Start
             ) {
+                if (message.photoUrl != null) {
+                    FeedImage(message.photoUrl,
+                        modifier = Modifier.clickable(onClick = { showFullScreenImage = true }),
+                        roundingSize = 16.dp
+                    )
+                    Spacer(Modifier.height(4.dp))
+                }
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(message.content,
                         color = textColor,
@@ -76,17 +90,17 @@ fun MessageBubble(message: MessageModel) {
                     )
 
                     // User message, short message, inline status
-                    if (!showTimestamp && !message.incoming) {
+                    if (!showTimestamp && !message.incoming && message.photoUrl == null) {
                         Spacer(modifier = Modifier.width(4.dp))
                         MessageStatusIcon(message.status, textColor)
                     }
                 }
 
                 // Any message, long message, timestamp on new line
-                if (showTimestamp) {
+                if (showTimestamp || message.photoUrl != null) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(top = 4.dp)
+                        modifier = Modifier.padding(top = 4.dp).align(Alignment.End)
                     ) {
                         Text(
                             text = message.timestamp,
@@ -102,6 +116,13 @@ fun MessageBubble(message: MessageModel) {
 
             }
         }
+    }
+
+    if (showFullScreenImage && message.photoUrl != null) {
+        FullScreenImageViewer(
+            imageUrl = message.photoUrl,
+            onDismiss = { showFullScreenImage = false }
+        )
     }
 }
 
@@ -157,6 +178,7 @@ fun MessageBubblePreview() {
                     userId = "user1",
                     content = "Hey!",
                     timestamp = "10:00 AM",
+                    photoUrl = "https://cdn.pixabay.com/photo/2021/12/12/20/00/play-6865967_1280.jpg",
                     incoming = true,
                     status = MessageStatus.SENT
                 )

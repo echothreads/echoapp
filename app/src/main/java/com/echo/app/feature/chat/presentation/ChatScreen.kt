@@ -89,7 +89,7 @@ fun ChatScreen(chat: ChatItemModel) {
                 content = "cash app me some $$$",
                 timestamp = "3h ago",
                 incoming = true,
-                photoUrl = null,
+                photoUrl = "https://cdn.pixabay.com/photo/2021/12/12/20/00/play-6865967_1280.jpg",
                 status = MessageStatus.READ
             ),
             MessageModel(
@@ -122,7 +122,7 @@ fun ChatScreen(chat: ChatItemModel) {
             MessageModel(
                 id = "7",
                 userId = "me",
-                content = "nig",
+                content = "ni",
                 timestamp = "Now",
                 incoming = false,
                 photoUrl = null,
@@ -323,7 +323,7 @@ fun ChatScreenPreview() {
             id = "2",
             displayName = "Bob Jones",
             username = "bjones",
-            profileAvatar = "https://media1.giphy.com/media/v1.Y2lkPTZjMDliOTUyMXA2ejByZmdzYm9idXR6MTh1Zzd6NWljNXE4MzdrcjBpMG5jcGNpOSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/0j9Xe1SYRikDqhMRgb/200w.gif",
+            profileAvatar = "https://i.pravatar.cc/150?u=2",
             lastMessageText = "Did you check the new file?",
             lastMessageIncoming = true,
             lastMessageStatus = MessageStatus.DELIVERED,
