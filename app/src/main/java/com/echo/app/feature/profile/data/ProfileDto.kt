@@ -10,7 +10,9 @@ data class ProfileDto(
     val bio: String,
     val followers: Long,
     val following: Long,
-    val followed: Boolean
+    val followed: Boolean,
+    val lastSeenTimestamp: Long? = null,
+    val isOnline: Boolean? = null
 ) {
 
 }

@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,6 +33,7 @@ import com.echo.app.feature.feed.data.DummyFeedRepository
 import com.echo.app.feature.feed.domain.PostModel
 import com.echo.app.ui.theme.EchoTheme
 import kotlin.time.Clock
+import com.echo.app.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,7 +45,7 @@ fun FeedScreen(globalPadding: PaddingValues, posts: List<PostModel>) {
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
-                title = { Text("Feed") },
+                title = { Text(stringResource(R.string.nav_home)) },
                 scrollBehavior = scrollBehavior
             )
         }

@@ -4,7 +4,7 @@
     <string name="options">Options</string>
 
     <!-- Navigation -->
-    <string name="nav_home">Home</string>
+    <string name="nav_home">Feed</string>
     <string name="nav_search">Search</string>
     <string name="nav_post">Post</string>
     <string name="nav_chat">Chats</string>

@@ -88,10 +88,9 @@ fun FeedCard(post: PostModel) {
                 AsyncImage(
                     model = post.authorProfilePic,
                     modifier = Modifier.size(48.dp).clip(CircleShape),
-                    contentDescription = "Account",
+                    contentDescription = stringResource(R.string.profile_picture),
                     placeholder = painterResource(R.drawable.outline_account_circle),
-                    error = painterResource(id = R.drawable.outline_account_circle),
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface)
+                    error = painterResource(id = R.drawable.outline_account_circle)
                 )
                 Spacer(modifier = Modifier.size(8.dp))
                 Column() {
