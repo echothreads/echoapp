@@ -34,7 +34,8 @@ fun PostBottomBar() {
             ) {
                 Icon(
                     painterResource(R.drawable.ic_photo),
-                    contentDescription = stringResource(R.string.add_picture)
+                    contentDescription = stringResource(R.string.add_picture),
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
 
@@ -43,7 +44,8 @@ fun PostBottomBar() {
             ) {
                 Icon(
                     painterResource(R.drawable.ic_gif),
-                    contentDescription = stringResource(R.string.add_gif)
+                    contentDescription = stringResource(R.string.add_gif),
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
 
@@ -53,7 +55,8 @@ fun PostBottomBar() {
             ) {
                 Icon(
                     painterResource(R.drawable.ic_chart),
-                    contentDescription = stringResource(R.string.add_poll)
+                    contentDescription = stringResource(R.string.add_poll),
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
 
@@ -62,7 +65,8 @@ fun PostBottomBar() {
             ) {
                 Icon(
                     painterResource(R.drawable.ic_location),
-                    contentDescription = stringResource(R.string.add_location)
+                    contentDescription = stringResource(R.string.add_location),
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }

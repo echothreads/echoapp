@@ -90,7 +90,7 @@ fun UserProfileScreen(user: ProfileDto, viewModel: UserProfileScreenViewModel = 
 
     val isBelowHeader by remember {
         derivedStateOf {
-            // First item is header so if we're above it, its below
+            // First item is header so if we're below it, its above
             listState.firstVisibleItemIndex > 0
         }
     }
@@ -170,7 +170,8 @@ fun UserProfileScreen(user: ProfileDto, viewModel: UserProfileScreenViewModel = 
                     state.posts.isEmpty() && state.isLoading -> {
                         Box(
                             modifier = Modifier.fillMaxWidth().fillParentMaxHeight(),
-                            contentAlignment = Alignment.Center
+                            contentAlignment =
+                                if (!isBelowHeader) Alignment.TopCenter else Alignment.Center
                         ) {
                             CircularProgressIndicator()
                         }

@@ -8,7 +8,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -32,6 +31,7 @@ fun CreatePostScreen(
     val isPostButtonEnabled = postText.trim().isNotEmpty()
 
     Scaffold(
+        modifier = Modifier.imePadding(),
         topBar = {
             TopAppBar(
                 title = { Text("New Post", fontSize = 18.sp) },
@@ -41,20 +41,13 @@ fun CreatePostScreen(
                     }
                 },
                 actions = {
-                    TextButton(
+                    Button(
                         onClick = { onPostCreated(postText) },
                         enabled = isPostButtonEnabled,
-                        colors = ButtonDefaults.textButtonColors(
-                            contentColor = MaterialTheme.colorScheme.primary,
-                            disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-                        )
                     ) {
                         Text("Post", fontSize = 16.sp)
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
+                }
             )
         },
         bottomBar = {

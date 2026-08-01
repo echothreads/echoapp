@@ -15,6 +15,7 @@ import androidx.navigation.NavController
 import com.echo.app.R
 import com.echo.app.navigation.FeedRoute
 import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.echo.app.feature.feed.presentation.FeedScreen
 import com.echo.app.navigation.AccountRoute
@@ -26,9 +27,8 @@ import com.echo.app.ui.theme.EchoTheme
 @Composable
 fun FloatingNavigationBar(navController: NavController) {
 
-//    val navBackStackEntry by navController.currentBackStackEntryAsState()
-//    val currentDestination = navBackStackEntry?.destination
-    val test = navController.currentDestination
+    val navBackStackEntry = navController.currentBackStackEntryAsState().value
+    val currentDestination = navBackStackEntry?.destination
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
         modifier = Modifier
@@ -53,7 +53,7 @@ fun FloatingNavigationBar(navController: NavController) {
                         )
                     },
                     label = { Text(stringResource(R.string.nav_home)) },
-                    selected = test?.hasRoute<FeedRoute>() ?: false,
+                    selected = currentDestination?.hasRoute<FeedRoute>() ?: false,
                     alwaysShowLabel = false,
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = MaterialTheme.colorScheme.primary,
@@ -80,7 +80,7 @@ fun FloatingNavigationBar(navController: NavController) {
                         )
                     },
                     label = { Text(stringResource(R.string.nav_search)) },
-                    selected = test?.hasRoute<SearchRoute>() ?: false,
+                    selected = currentDestination?.hasRoute<SearchRoute>() ?: false,
                     alwaysShowLabel = false,
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = MaterialTheme.colorScheme.primary,
@@ -107,7 +107,7 @@ fun FloatingNavigationBar(navController: NavController) {
                         )
                     },
                     label = { Text(stringResource(R.string.nav_post)) },
-                    selected = test?.hasRoute<PostRoute>() ?: false,
+                    selected = currentDestination?.hasRoute<PostRoute>() ?: false,
                     alwaysShowLabel = false,
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = MaterialTheme.colorScheme.primary,
@@ -134,7 +134,7 @@ fun FloatingNavigationBar(navController: NavController) {
                         )
                     },
                     label = { Text(stringResource(R.string.nav_chat)) },
-                    selected = test?.hasRoute<ChatsRoute>() ?: false,
+                    selected = currentDestination?.hasRoute<ChatsRoute>() ?: false,
                     alwaysShowLabel = false,
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = MaterialTheme.colorScheme.primary,
@@ -162,7 +162,7 @@ fun FloatingNavigationBar(navController: NavController) {
                         )
                     },
                     label = { Text(stringResource(R.string.nav_account)) },
-                    selected = test?.hasRoute<AccountRoute>() ?: false,
+                    selected = currentDestination?.hasRoute<AccountRoute>() ?: false,
                     alwaysShowLabel = false,
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = MaterialTheme.colorScheme.primary,

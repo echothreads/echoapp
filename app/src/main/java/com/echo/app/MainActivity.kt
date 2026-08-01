@@ -14,8 +14,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.echo.app.feature.chat.domain.ChatItemModel
@@ -43,6 +46,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             var posts by remember { mutableStateOf<List<PostModel>>(emptyList()) }
+            val currentRoute = navController.currentBackStackEntryAsState().value?.destination
+            val isBottomBarRoute = currentRoute?.hierarchy?.any { route ->
+                route.hasRoute<MainGraph>()
+            }
 
             LaunchedEffect(Unit) {
                 posts = DummyFeedRepository().getProfilePosts(
@@ -54,7 +61,7 @@ class MainActivity : ComponentActivity() {
             }
 
             EchoTheme {
-                Scaffold(bottomBar = { FloatingNavigationBar(navController) }) { globalPadding ->
+                Scaffold(bottomBar = {  if (isBottomBarRoute == true) FloatingNavigationBar(navController) }) { globalPadding ->
                     NavHost(
                         navController,
                         startDestination = MainGraph,
@@ -67,11 +74,6 @@ class MainActivity : ComponentActivity() {
 
                             composable<SearchRoute> {
                                 UserProfileScreenPreview()
-                            }
-
-                            composable<PostRoute> {
-                                CreatePostScreen("https://i.pravatar.cc/150?u=1",
-                                    {}, {})
                             }
 
                             composable<ChatsRoute> {
@@ -140,6 +142,11 @@ class MainActivity : ComponentActivity() {
                                     Text("TEST")
                                 }
                             }
+                        }
+
+                        composable<PostRoute> {
+                            CreatePostScreen("https://i.pravatar.cc/150?u=1",
+                                { navController.popBackStack()}, {})
                         }
                     }
                 }
