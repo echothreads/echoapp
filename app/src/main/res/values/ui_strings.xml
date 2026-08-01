@@ -2,6 +2,8 @@
 <resources>
     <string name="back_button">Back Button</string>
     <string name="options">Options</string>
+    <string name="close">Close</string>
+    <string name="cancel">Cancel</string>
 
     <!-- Navigation -->
     <string name="nav_home">Feed</string>

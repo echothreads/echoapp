@@ -25,6 +25,7 @@ import com.echo.app.feature.feed.data.DummyFeedRepository
 import com.echo.app.feature.feed.domain.PostModel
 import com.echo.app.ui.theme.EchoTheme
 import com.echo.app.feature.feed.presentation.FeedScreen
+import com.echo.app.feature.post.presentation.CreatePostScreen
 import com.echo.app.navigation.AccountRoute
 import com.echo.app.navigation.ChatsRoute
 import com.echo.app.navigation.FeedRoute
@@ -69,9 +70,8 @@ class MainActivity : ComponentActivity() {
                             }
 
                             composable<PostRoute> {
-                                Box(modifier = Modifier.fillMaxSize()) {
-                                    Text("New Post")
-                                }
+                                CreatePostScreen("https://i.pravatar.cc/150?u=1",
+                                    {}, {})
                             }
 
                             composable<ChatsRoute> {

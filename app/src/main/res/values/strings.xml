@@ -48,4 +48,10 @@
     <string name="sent">Sent</string>
     <string name="delivered">Delivered</string>
     <string name="read">Seen</string>
+
+    <!-- Post Screen -->
+    <string name="add_picture">Add Picture</string>
+    <string name="add_poll">Add Poll</string>
+    <string name="add_gif">Add GIF</string>
+    <string name="add_location">Add Location</string>
 </resources>
