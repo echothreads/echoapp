@@ -1,5 +1,7 @@
 package com.echo.app.feature.post.presentation
 
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -19,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.echo.app.R
 
 @Composable
-fun PostBottomBar() {
+fun PostBottomBar(imageOnclick: () -> Unit) {
     Row(
         modifier = Modifier
             .windowInsetsPadding(WindowInsets.navigationBars)
@@ -30,7 +32,7 @@ fun PostBottomBar() {
     ) {
         Row(modifier = Modifier.weight(1f, fill = true)) {
             IconButton(
-                onClick = {}
+                onClick = imageOnclick
             ) {
                 Icon(
                     painterResource(R.drawable.ic_photo),
