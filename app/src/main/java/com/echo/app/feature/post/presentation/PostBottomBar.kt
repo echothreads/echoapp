@@ -21,7 +21,8 @@ import androidx.compose.ui.unit.dp
 import com.echo.app.R
 
 @Composable
-fun PostBottomBar(imageOnclick: () -> Unit) {
+fun PostBottomBar(imageOnclick: () -> Unit,
+                  gifOnclick: () -> Unit) {
     Row(
         modifier = Modifier
             .windowInsetsPadding(WindowInsets.navigationBars)
@@ -42,7 +43,7 @@ fun PostBottomBar(imageOnclick: () -> Unit) {
             }
 
             IconButton(
-                onClick = {}
+                onClick = gifOnclick
             ) {
                 Icon(
                     painterResource(R.drawable.ic_gif),

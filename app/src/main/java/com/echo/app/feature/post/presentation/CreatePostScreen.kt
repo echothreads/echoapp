@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -27,6 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.echo.app.R
 import com.echo.app.ui.theme.EchoTheme
+import com.echo.app.ui.widgets.GifPickerBottomSheet
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,6 +41,7 @@ fun CreatePostScreen(
     var postText by remember { mutableStateOf("") }
     val isPostButtonEnabled = postText.trim().isNotEmpty()
     val selectedUris by viewModel.selectedImageUris.collectAsState()
+    var selectedGif by remember { mutableStateOf<String?>(null) }
 
     // Native Android Image Picker
     val multiplePhotosPickerLauncher = rememberLauncherForActivityResult(
@@ -48,6 +51,8 @@ fun CreatePostScreen(
             viewModel.addImages(uris)
         }
     }
+
+    var showGifPicker by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier.imePadding(),
@@ -74,6 +79,9 @@ fun CreatePostScreen(
                 multiplePhotosPickerLauncher.launch(
                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                 )
+            },
+            gifOnclick = {
+                showGifPicker = true
             })
         }
     ) { innerPadding ->
@@ -83,8 +91,7 @@ fun CreatePostScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
-                    .weight(1f, fill = true),
+                    .padding(16.dp),
                 verticalAlignment = Alignment.Top
             ) {
                 // User Avatar
@@ -138,6 +145,18 @@ fun CreatePostScreen(
                     )
                 }
             }
+            // GIF
+            if (selectedGif != null) {
+                AsyncImage(model = selectedGif,
+                    contentDescription = "Selected GIF",
+                    contentScale = ContentScale.FillWidth,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth()
+                        .heightIn(max = 240.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                )
+            }
             // Images
             if (selectedUris.isNotEmpty()) {
                 LazyRow(
@@ -163,6 +182,18 @@ fun CreatePostScreen(
                     }
                 }
             }
+        }
+        // GIF BOTTOM SHEET PICKER
+        if(showGifPicker) {
+            GifPickerBottomSheet(
+                onDismiss = {
+                    showGifPicker = false
+                },
+                onGifSelected = { gif ->
+                    selectedGif = gif
+                    showGifPicker = false
+                }
+            )
         }
     }
 }
