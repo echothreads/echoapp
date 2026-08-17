@@ -29,6 +29,10 @@ import coil3.compose.AsyncImage
 import com.echo.app.R
 import com.echo.app.ui.theme.EchoTheme
 import com.echo.app.ui.widgets.GifPickerBottomSheet
+import com.echo.app.ui.widgets.SimpleAlertDialog
+import com.echo.app.ui.widgets.poll.FeedPollView
+import com.echo.app.ui.widgets.poll.PollBottomSheet
+import androidx.compose.runtime.collectAsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,21 +42,26 @@ fun CreatePostScreen(
     onPostCreated: (String) -> Unit,
     viewModel: CreatePostViewModel = viewModel()
 ) {
-    var postText by remember { mutableStateOf("") }
+    // ViewModel States
+    val postAttachments = viewModel.postAttachmentsState.collectAsState().value
+
+    var postText by viewModel.postText
     val isPostButtonEnabled = postText.trim().isNotEmpty()
-    val selectedUris by viewModel.selectedImageUris.collectAsState()
-    var selectedGif by remember { mutableStateOf<String?>(null) }
 
     // Native Android Image Picker
     val multiplePhotosPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = 4)
     ) { uris ->
         if (uris.isNotEmpty()) {
-            viewModel.addImages(uris)
+            val stringUris: List<String> = uris.map { it.toString() }
+            viewModel.setImages(stringUris)
         }
     }
 
+    // local UI states
     var showGifPicker by remember { mutableStateOf(false) }
+    var showPollCreator by remember { mutableStateOf(false) }
+    var showMapsSheet by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier.imePadding(),
@@ -82,6 +91,12 @@ fun CreatePostScreen(
             },
             gifOnclick = {
                 showGifPicker = true
+            },
+            pollOnclick = {
+                showPollCreator = true
+            },
+            mapsOnclick = {
+                showMapsSheet = true
             })
         }
     ) { innerPadding ->
@@ -145,9 +160,11 @@ fun CreatePostScreen(
                     )
                 }
             }
+            // Poll
+            FeedPollView(postAttachments.pollOptions.toList(), static = true, modifier = Modifier.padding(horizontal = 16.dp))
             // GIF
-            if (selectedGif != null) {
-                AsyncImage(model = selectedGif,
+            if (postAttachments.gif != null) {
+                AsyncImage(model = postAttachments.gif,
                     contentDescription = "Selected GIF",
                     contentScale = ContentScale.FillWidth,
                     modifier = Modifier
@@ -158,12 +175,12 @@ fun CreatePostScreen(
                 )
             }
             // Images
-            if (selectedUris.isNotEmpty()) {
+            if (postAttachments.images.isNotEmpty()) {
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.padding(bottom = 16.dp).fillMaxWidth().height(120.dp)
                 ) {
-                    items(selectedUris) { uri ->
+                    items(postAttachments.images) { uri ->
                         Box {
                             // The actual image
                             AsyncImage(
@@ -183,16 +200,32 @@ fun CreatePostScreen(
                 }
             }
         }
-        // GIF BOTTOM SHEET PICKER
-        if(showGifPicker) {
-            GifPickerBottomSheet(
+        // BOTTOM SHEET PICKERS
+        when {
+            showGifPicker -> GifPickerBottomSheet(
                 onDismiss = {
                     showGifPicker = false
                 },
                 onGifSelected = { gif ->
-                    selectedGif = gif
+                    viewModel.setGif(gif)
                     showGifPicker = false
                 }
+            )
+            showPollCreator -> PollBottomSheet(
+                onDismiss = {
+                    showPollCreator = false
+                },
+                onSelect = { pollList ->
+                    showPollCreator = false
+                    viewModel.setPoll(pollList)
+                }
+            )
+            showMapsSheet -> SimpleAlertDialog(
+                title = "Not implemented",
+                text = "Location picker unimplemented",
+                confirmText = "OK",
+                onDismissRequest = { showMapsSheet = false },
+                onConfirmation = { showMapsSheet = false }
             )
         }
     }

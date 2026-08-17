@@ -22,7 +22,9 @@ import com.echo.app.R
 
 @Composable
 fun PostBottomBar(imageOnclick: () -> Unit,
-                  gifOnclick: () -> Unit) {
+                  gifOnclick: () -> Unit,
+                  pollOnclick: () -> Unit,
+                  mapsOnclick: () -> Unit) {
     Row(
         modifier = Modifier
             .windowInsetsPadding(WindowInsets.navigationBars)
@@ -54,7 +56,7 @@ fun PostBottomBar(imageOnclick: () -> Unit,
 
 
             IconButton(
-                onClick = {}
+                onClick = pollOnclick
             ) {
                 Icon(
                     painterResource(R.drawable.ic_chart),
@@ -64,7 +66,7 @@ fun PostBottomBar(imageOnclick: () -> Unit,
             }
 
             IconButton(
-                onClick = {}
+                onClick = mapsOnclick
             ) {
                 Icon(
                     painterResource(R.drawable.ic_location),

@@ -11,4 +11,12 @@
     <string name="nav_post">Post</string>
     <string name="nav_chat">Chats</string>
     <string name="nav_account">Account</string>
+
+    <!-- Poll Strings -->
+    <string name="poll_creation">Poll Creation</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="poll_option">Option %1$d</string>
+    <string name="add_option">Add Option</string>
+    <string name="create">Create</string>
 </resources>
