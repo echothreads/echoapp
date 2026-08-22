@@ -33,6 +33,9 @@ import com.echo.app.ui.widgets.SimpleAlertDialog
 import com.echo.app.ui.widgets.poll.FeedPollView
 import com.echo.app.ui.widgets.poll.PollBottomSheet
 import androidx.compose.runtime.collectAsState
+import com.echo.app.feature.post.domain.AttachmentType
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,10 +61,32 @@ fun CreatePostScreen(
         }
     }
 
+    // coroutine scope
+    val scope = rememberCoroutineScope()
     // local UI states
     var showGifPicker by remember { mutableStateOf(false) }
     var showPollCreator by remember { mutableStateOf(false) }
     var showMapsSheet by remember { mutableStateOf(false) }
+    var pendingConflict by remember {
+        mutableStateOf<ConflictDialogState?>(null)
+    }
+
+    // Attachment button action avoiding boilerplate
+    fun attachmentButtonAction(incoming: AttachmentType, openPicker: () -> Unit) {
+        scope.launch {
+            var shouldContinue = true
+            val conflicts = postAttachments.getConflictsWith(incoming)
+            if (conflicts.isNotEmpty()) {
+                val completer = CompletableDeferred<Boolean>()
+                pendingConflict = ConflictDialogState(conflicts, completer)
+                shouldContinue = completer.await()
+            }
+            if (shouldContinue) {
+                openPicker()
+            }
+            pendingConflict = null
+        }
+    }
 
     Scaffold(
         modifier = Modifier.imePadding(),
@@ -84,20 +109,36 @@ fun CreatePostScreen(
             )
         },
         bottomBar = {
-            PostBottomBar(imageOnclick = {
-                multiplePhotosPickerLauncher.launch(
-                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                )
-            },
-            gifOnclick = {
-                showGifPicker = true
-            },
-            pollOnclick = {
-                showPollCreator = true
-            },
-            mapsOnclick = {
-                showMapsSheet = true
-            })
+            PostBottomBar(
+                imageOnclick = {
+                    attachmentButtonAction(
+                        incoming = AttachmentType.MEDIA,
+                        openPicker = {
+                            multiplePhotosPickerLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        }
+                    )
+                },
+                gifOnclick = {
+                    attachmentButtonAction(
+                        incoming = AttachmentType.GIF,
+                        openPicker = { showGifPicker = true }
+                    )
+                },
+                pollOnclick = {
+                    attachmentButtonAction(
+                        incoming = AttachmentType.POLL,
+                        openPicker = { showPollCreator = true }
+                    )
+                },
+                mapsOnclick = {
+                    attachmentButtonAction(
+                        incoming = AttachmentType.MAP,
+                        openPicker = { showMapsSheet = true }
+                    )
+                }
+            )
         }
     ) { innerPadding ->
         Column(horizontalAlignment = Alignment.CenterHorizontally,
@@ -227,8 +268,32 @@ fun CreatePostScreen(
                 onDismissRequest = { showMapsSheet = false },
                 onConfirmation = { showMapsSheet = false }
             )
+            pendingConflict != null -> PostConflictsDialog(
+                conflicts = pendingConflict!!.conflicts,
+                onDismiss = {
+                    pendingConflict!!.completer.complete(false)
+                }
+            ) {
+                pendingConflict!!.completer.complete(true)
+            }
         }
     }
+}
+
+@Composable
+fun PostConflictsDialog(conflicts: List<AttachmentType>,
+                        onDismiss: () -> Unit,
+                        onConfirm: () -> Unit) {
+    val conflictsString = conflicts.joinToString {
+        it.toString()
+    }
+    SimpleAlertDialog(
+        title = stringResource(R.string.too_many_attachments),
+        text = stringResource(R.string.too_many_attachments_message, conflictsString),
+        confirmText = "OK",
+        onDismissRequest = onDismiss,
+        onConfirmation = onConfirm
+    )
 }
 
 @Preview(
@@ -242,3 +307,8 @@ fun CreatePostScreenPreview() {
             {}, {})
     }
 }
+
+data class ConflictDialogState(
+    val conflicts: List<AttachmentType>,
+    val completer: CompletableDeferred<Boolean>
+)

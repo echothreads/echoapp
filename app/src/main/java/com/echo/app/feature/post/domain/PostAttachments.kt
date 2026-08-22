@@ -21,6 +21,11 @@ data class PostAttachments(
         AttachmentType.MAP -> listOf(AttachmentType.GIF)
     }
 
+    fun getConflictsWith(incoming: AttachmentType): List<AttachmentType> {
+        val conflict = getConflicts(incoming)
+        return this.activeTypes.filter { conflict.contains(it) }
+    }
+
     fun copyWithoutConflicts(incoming: AttachmentType): PostAttachments {
         val rules = getConflicts(incoming)
         return this.copy(
