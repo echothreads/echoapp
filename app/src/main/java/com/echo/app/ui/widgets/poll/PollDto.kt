@@ -1,12 +1,14 @@
 package com.echo.app.ui.widgets.poll
 
-data class PollDto(
+data class PostPollDto(
     val totalVotes: Long,
-    val pollOptions: List<PollOptionDto>
+    val voted: String?,
+    val closed: Boolean,
+    val options: List<PostPollOptionsDto>
 )
 
-data class PollOptionDto(
-    val text: String,
-    val votes: Long,
-    val isSelected: Boolean
+data class PostPollOptionsDto(
+    val id: String,
+    val name: String,
+    val votes: Long?
 )

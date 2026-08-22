@@ -34,6 +34,8 @@ import com.echo.app.ui.widgets.poll.FeedPollView
 import com.echo.app.ui.widgets.poll.PollBottomSheet
 import androidx.compose.runtime.collectAsState
 import com.echo.app.feature.post.domain.AttachmentType
+import com.echo.app.feature.post.domain.PostAttachments
+import com.echo.app.ui.widgets.poll.PostPollModel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
 
@@ -202,7 +204,8 @@ fun CreatePostScreen(
                 }
             }
             // Poll
-            FeedPollView(postAttachments.pollOptions.toList(), static = true, modifier = Modifier.padding(horizontal = 16.dp))
+            if (postAttachments.pollOptions != emptyList<String>())
+                FeedPollView(postAttachments.pollOptions, modifier = Modifier.padding(horizontal = 16.dp))
             // GIF
             if (postAttachments.gif != null) {
                 AsyncImage(model = postAttachments.gif,

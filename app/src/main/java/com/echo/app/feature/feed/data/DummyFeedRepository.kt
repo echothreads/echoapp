@@ -1,7 +1,9 @@
 package com.echo.app.feature.feed.data
 
 import com.echo.app.feature.feed.domain.PostModel
-import com.echo.app.feature.profile.presentation.ProfileTabType // Adjust import as needed
+import com.echo.app.feature.profile.presentation.ProfileTabType
+import com.echo.app.ui.widgets.poll.PostPollModel
+import com.echo.app.ui.widgets.poll.PostPollOptionsModel
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.minutes
 import kotlin.random.Random
@@ -60,7 +62,35 @@ class DummyFeedRepository {
                 else -> randomText
             }
 
-            val hasImage = Random.nextBoolean() && !isReply
+            // Mutually exclusive attachments (Image, GIF, Poll, or None)
+            var imageUrl: String? = null
+            var poll: PostPollModel? = null
+
+            if (!isReply && !isRepost) {
+                val roll = Random.nextFloat()
+                when {
+                    roll < 0.2f -> {
+                        imageUrl = "https://picsum.photos/seed/${index + tabType.ordinal * 100}/800/600"
+                    }
+                    roll < 0.35f -> {
+                        val gifIds = listOf("3o7TKMGpx4y7Z8zYxG", "l41lI4bXLD6S7g4a4", "3o7TKVUn7iM8FMEU24")
+                        imageUrl = "https://media.giphy.com/media/${gifIds.random()}/giphy.gif"
+                    }
+                    roll < 0.5f -> {
+                        val options = listOf(
+                            PostPollOptionsModel(id = "opt1", name = "Definitely", votes = Random.nextLong(0, 100)),
+                            PostPollOptionsModel(id = "opt2", name = "Maybe", votes = Random.nextLong(0, 100)),
+                            PostPollOptionsModel(id = "opt3", name = "Not at all", votes = Random.nextLong(0, 50))
+                        )
+                        poll = PostPollModel(
+                            totalVotes = options.sumOf { it.votes ?: 0L },
+                            voted = if (Random.nextBoolean()) options.random().id else null,
+                            closed = Random.nextBoolean(),
+                            options = options
+                        )
+                    }
+                }
+            }
 
             PostModel(
                 id = "post_$index",
@@ -69,7 +99,8 @@ class DummyFeedRepository {
                 authorProfilePic = authorPic,
                 isVerified = Random.nextBoolean(),
                 content = finalContent,
-                imageUrl = if (hasImage) "https://picsum.photos/seed/${index + tabType.ordinal * 100}/800/600" else null,
+                imageUrl = imageUrl,
+                poll = poll,
                 timestamp = postTimestamp,
                 score = Random.nextInt(10, 5000),
                 comments = Random.nextInt(0, 800),
@@ -77,7 +108,7 @@ class DummyFeedRepository {
                 inReplyToPostId = if (isReply) "post_2654" else null,
                 inReplyToUsername = if (isReply) otherUsernames.random() else null,
                 inReplyToSnippet = if (isReply) dummyContent.random() else null,
-                repostedByUsername = if (isRepost) profileUsername else null
+                repostedByUsername = if (isRepost) profileUsername else null,
             )
         }
     }

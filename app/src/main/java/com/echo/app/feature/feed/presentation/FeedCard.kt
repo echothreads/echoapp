@@ -72,6 +72,7 @@ import com.echo.app.Utils
 import com.echo.app.feature.feed.domain.PostModel
 import com.echo.app.ui.theme.EchoTheme
 import com.echo.app.ui.widgets.FullScreenImageViewer
+import com.echo.app.ui.widgets.poll.FeedPollView
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
 
@@ -236,6 +237,11 @@ fun FeedCard(post: PostModel) {
                             Spacer(Modifier.height(16.dp))
                             FeedImage(post.imageUrl,
                                 modifier = Modifier.clickable(onClick = { showFullScreenImage = true }))
+                            Spacer(Modifier.height(16.dp))
+                        }
+                        if (post.poll != null) {
+                            Spacer(Modifier.height(16.dp))
+                            FeedPollView(post.poll, onVote = {})
                             Spacer(Modifier.height(16.dp))
                         }
                     }
@@ -422,6 +428,7 @@ fun FeedCardPreview() {
         isVerified = true,
         content = "I was in Russia today, was surprised to hear that the local market did not have vodka, i will not be visiting Norilsk again",
         imageUrl = "https://preview.redd.it/moscows-depression-is-upon-us-and-its-hard-to-cope-being-an-v0-7qkqnbqu2h3g1.jpeg?auto=webp&s=75b604a9c74feb830b4a90b43a831f5273c0927a",
+        poll = null,
         timestamp = Clock.System.now(),
         score = 95643,
         comments = 5435,

@@ -90,6 +90,7 @@ fun FeedScreenPreview() {
             isVerified = true,
             content = "This is a preview post number $index",
             imageUrl = null,
+            poll = null,
             timestamp = Clock.System.now(),
             score = 100,
             comments = 10,

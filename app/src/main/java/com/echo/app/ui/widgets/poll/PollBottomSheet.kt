@@ -41,7 +41,8 @@ import com.echo.app.ui.theme.EchoTheme
 @Composable
 fun PollBottomSheet(
     onDismiss: () -> Unit,
-    onSelect: (List<String>) -> Unit
+    onSelect: (List<String>) -> Unit,
+    existingOptions: List<String> = emptyList()
 ) {
     val pollOptions = remember { mutableStateListOf("", "") }
     val maxOptions = 10

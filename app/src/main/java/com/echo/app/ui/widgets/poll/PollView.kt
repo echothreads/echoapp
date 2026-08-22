@@ -13,35 +13,49 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun FeedPollView(pollOptions: List<String>, modifier: Modifier = Modifier, static: Boolean = false) {
-    var selectedIndex by remember { mutableStateOf<Int?>(null) }
+fun FeedPollView(pollOptions: PostPollModel, onVote: (String) -> Unit, modifier: Modifier = Modifier) {
     Column(horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier) {
-        pollOptions.forEachIndexed { index, option ->
-            val isSelected = static && selectedIndex == index
-            if (static) {
-                PollOption(
-                    optionText = option,
-                    votes = 0,
-                    totalVotes = 0,
-                    isSelected,
-                    onVote = {
-                        Unit
+        pollOptions.options.forEach { option ->
+            val isSelected = option.id == pollOptions.voted
+            PollOption(
+                optionText = option.name,
+                votes = option.votes,
+                totalVotes = pollOptions.totalVotes,
+                isSelected,
+                onVote = {
+                    if (!pollOptions.closed && pollOptions.voted == null) {
+                        onVote(option.id)
                     }
-                )
-            } else {
-                val pollOption = PollOptionDto(text = "hi", votes = 5, isSelected = false)
-                PollOption(
-                    optionText = pollOption.text,
-                    votes = pollOption.votes,
-                    totalVotes = 500,
-                    pollOption.isSelected,
-                    onVote = {
-                        selectedIndex = index
-                    }
-                )
-            }
+                }
+            )
             Spacer(Modifier.height(4.dp))
         }
     }
+}
+
+// Preview for post screen
+@Composable
+fun FeedPollView(
+    pollOptions: List<String>,
+    modifier: Modifier = Modifier
+) {
+    val fakeModel = PostPollModel(
+        totalVotes = 0,
+        voted = null,
+        closed = false,
+        options = pollOptions.mapIndexed { index, text ->
+            PostPollOptionsModel(
+                id = index.toString(),
+                name = text,
+                votes = 0
+            )
+        }
+    )
+
+    FeedPollView(
+        pollOptions = fakeModel,
+        onVote = { /* Do nothing */ },
+        modifier = modifier
+    )
 }

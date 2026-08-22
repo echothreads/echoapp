@@ -21,16 +21,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import kotlin.math.roundToInt
 
 @Composable
 fun PollOption(
     optionText: String,
-    votes: Long,
+    votes: Long?,
     totalVotes: Long,
     isSelected: Boolean,
     onVote: () -> Unit
 ) {
-    val targetFraction = if (totalVotes == 0L) 0f else votes.toFloat() / totalVotes
+    val targetFraction = if (totalVotes == 0L || votes == null) 0f else votes.toFloat() / totalVotes
 
     // animates the bar filling up
     val animatedFraction by animateFloatAsState(
@@ -69,9 +70,9 @@ fun PollOption(
                 color = MaterialTheme.colorScheme.onSurface
             )
 
-            if (totalVotes > 0) {
+            if (totalVotes > 0 && votes != null) {
                 Text(
-                    text = "${(targetFraction * 100).toInt()}%",
+                    text = "%.1f".format(targetFraction * 100) + "%",
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }

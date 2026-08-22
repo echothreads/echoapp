@@ -1,9 +1,12 @@
 package com.echo.app.feature.feed.data
 
+import com.echo.app.ui.widgets.poll.PostPollDto
+
 data class PostDto(
     val id: String,
     val contentText: String,
     val mediaUrl: String?,
+    val poll: PostPollDto?,
     val timestamp: String,
     val stats: PostStatsDto,
 

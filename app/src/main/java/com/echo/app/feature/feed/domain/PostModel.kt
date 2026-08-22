@@ -1,6 +1,7 @@
 package com.echo.app.feature.feed.domain
 
 import com.echo.app.feature.feed.data.PostDto
+import com.echo.app.ui.widgets.poll.PostPollModel
 import kotlin.time.Instant
 
 data class PostModel(
@@ -11,6 +12,7 @@ data class PostModel(
     val isVerified: Boolean,
     val content: String,
     val imageUrl: String?,
+    val poll: PostPollModel?,
     val timestamp: Instant,
     val score: Int,
     val comments: Int,
@@ -33,6 +35,7 @@ data class PostModel(
                 isVerified = dto.isVerified,
                 content = dto.contentText,
                 imageUrl = dto.mediaUrl,
+                poll = if (dto.poll != null) PostPollModel.fromDto(dto.poll) else null,
                 timestamp = Instant.parse(dto.timestamp),
                 score = dto.stats.likes + dto.stats.dislikes,
                 comments = dto.stats.commentsCount,
