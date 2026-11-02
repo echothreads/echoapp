@@ -1,19 +1,16 @@
-package com.echo.app.ui.widgets
+package com.echo.app.ui.widgets.gif
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
@@ -40,13 +37,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.echo.app.ui.theme.EchoTheme
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GifPickerBottomSheet(
     onDismiss: () -> Unit,
     onGifSelected: (String) -> Unit,
-    viewModel: GifBottomSheetViewModel = viewModel()
+    viewModel: GifBottomSheetViewModel =  koinViewModel()
 ) {
     val searchQuery by viewModel.searchQuery.collectAsState()
     val gifState by viewModel.gifResults.collectAsState()
@@ -93,15 +91,19 @@ fun GifPickerBottomSheet(
                 }
 
                 items(gifState.gifResults,
-                    key = { gifUrl -> gifUrl }) { gifUrl ->
+                    key = { gif -> gif.url }) { gif ->
+                    val ratio = if (gif.width != null && gif.height != null)
+                        gif.width.toFloat()/gif.height.toFloat()
+                    else 1.33f
                     AsyncImage(
-                        model = gifUrl,
+                        model = gif.url,
                         contentDescription = "GIF",
                         contentScale = ContentScale.FillWidth,
                         modifier = Modifier
                             .fillMaxWidth()
+                            .aspectRatio(ratio)
                             .clip(RoundedCornerShape(8.dp))
-                            .clickable { onGifSelected(gifUrl) }
+                            .clickable { onGifSelected(gif.url) }
                     )
                 }
             }

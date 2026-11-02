@@ -28,14 +28,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.echo.app.R
 import com.echo.app.ui.theme.EchoTheme
-import com.echo.app.ui.widgets.GifPickerBottomSheet
+import com.echo.app.ui.widgets.gif.GifPickerBottomSheet
 import com.echo.app.ui.widgets.SimpleAlertDialog
 import com.echo.app.ui.widgets.poll.FeedPollView
 import com.echo.app.ui.widgets.poll.PollBottomSheet
 import androidx.compose.runtime.collectAsState
 import com.echo.app.feature.post.domain.AttachmentType
-import com.echo.app.feature.post.domain.PostAttachments
-import com.echo.app.ui.widgets.poll.PostPollModel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
 

@@ -1,4 +1,4 @@
-package com.echo.app.shared.klipy
+package com.echo.app.shared.data.klipy
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -14,14 +14,23 @@ data class KlipySearchResponse(
         @SerialName("has_next") val hasNext: Boolean)
 
     @Serializable
-    data class GifItem(val file: File)
+    data class GifItem(
+        val slug: String,
+        val title: String,
+        val file: File
+    )
 
     @Serializable
     data class File(val md: Resolution)
 
     @Serializable
-    data class Resolution(val gif: MediaUrl)
+    data class Resolution(val gif: GifInfo)
 
     @Serializable
-    data class MediaUrl(val url: String)
+    data class GifInfo(
+        val url: String,
+        val width: Int,
+        val height: Int,
+        val size: Int
+    )
 }
