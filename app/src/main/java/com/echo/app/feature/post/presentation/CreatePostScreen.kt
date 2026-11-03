@@ -24,31 +24,63 @@ import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.echo.app.R
+import com.echo.app.feature.post.domain.AttachmentType
+import com.echo.app.feature.post.domain.PostAttachments
 import com.echo.app.ui.theme.EchoTheme
-import com.echo.app.ui.widgets.gif.GifPickerBottomSheet
 import com.echo.app.ui.widgets.SimpleAlertDialog
+import com.echo.app.ui.widgets.gif.GifPickerBottomSheet
 import com.echo.app.ui.widgets.poll.FeedPollView
 import com.echo.app.ui.widgets.poll.PollBottomSheet
-import androidx.compose.runtime.collectAsState
-import com.echo.app.feature.post.domain.AttachmentType
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
+import org.koin.compose.viewmodel.koinViewModel
+import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreatePostScreen(
     userAvatarUrl: String,
     onClose: () -> Unit,
     onPostCreated: (String) -> Unit,
-    viewModel: CreatePostViewModel = viewModel()
+    modifier: Modifier = Modifier,
+    viewModel: CreatePostViewModel = koinViewModel()
 ) {
-    // ViewModel States
-    val postAttachments = viewModel.postAttachmentsState.collectAsState().value
+    val postAttachments by viewModel.postAttachmentsState.collectAsState()
+    val postText by viewModel.postText
 
-    var postText by viewModel.postText
+    CreatePostScreenContent(
+        userAvatarUrl = userAvatarUrl,
+        postText = postText,
+        postAttachments = postAttachments,
+        onClose = onClose,
+        onPostClick = { onPostCreated(postText) },
+        onPostTextChange = viewModel::onPostTextChange,
+        onImagesSelected = viewModel::setImages,
+        onRemoveImage = viewModel::removeImage,
+        onGifSelected = viewModel::setGif,
+        onRemoveGif = viewModel::removeGif,
+        onPollSelected = viewModel::setPoll,
+        modifier = modifier
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CreatePostScreenContent(
+    userAvatarUrl: String,
+    postText: String,
+    postAttachments: PostAttachments,
+    onClose: () -> Unit,
+    onPostClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    onPostTextChange: (String) -> Unit = {},
+    onImagesSelected: (List<String>) -> Unit = {},
+    onRemoveImage: (String) -> Unit = {},
+    onGifSelected: (String) -> Unit = {},
+    onRemoveGif: () -> Unit = {},
+    onPollSelected: (List<String>) -> Unit = {},
+) {
     val isPostButtonEnabled = postText.trim().isNotEmpty()
 
     // Native Android Image Picker
@@ -57,7 +89,7 @@ fun CreatePostScreen(
     ) { uris ->
         if (uris.isNotEmpty()) {
             val stringUris: List<String> = uris.map { it.toString() }
-            viewModel.setImages(stringUris)
+            onImagesSelected(stringUris)
         }
     }
 
@@ -71,7 +103,7 @@ fun CreatePostScreen(
         mutableStateOf<ConflictDialogState?>(null)
     }
 
-    // Attachment button action avoiding boilerplate
+    // attachment button action
     fun attachmentButtonAction(incoming: AttachmentType, openPicker: () -> Unit) {
         scope.launch {
             var shouldContinue = true
@@ -89,20 +121,18 @@ fun CreatePostScreen(
     }
 
     Scaffold(
-        modifier = Modifier.imePadding(),
+        modifier = modifier.imePadding(),
         topBar = {
             TopAppBar(
-                title = { Text("New Post", fontSize = 18.sp) },
+                title = { Text(stringResource(R.string.post_screen_title), fontSize = 18.sp) },
                 navigationIcon = {
                     IconButton(onClick = onClose) {
                         Icon(painterResource(R.drawable.ic_close), contentDescription = stringResource(R.string.cancel))
                     }
                 },
                 actions = {
-                    Button(
-                        onClick = { onPostCreated(postText) },
-                        enabled = isPostButtonEnabled,
-                    ) {
+                    Button(onClick = onPostClick,
+                        enabled = isPostButtonEnabled,) {
                         Text("Post", fontSize = 16.sp)
                     }
                 }
@@ -114,9 +144,7 @@ fun CreatePostScreen(
                     attachmentButtonAction(
                         incoming = AttachmentType.MEDIA,
                         openPicker = {
-                            multiplePhotosPickerLauncher.launch(
-                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                            )
+                            multiplePhotosPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                         }
                     )
                 },
@@ -144,15 +172,15 @@ fun CreatePostScreen(
         Column(horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(innerPadding)) {
             // Image with text
-            Row(
-                modifier = Modifier
+            Row(modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                verticalAlignment = Alignment.Top
-            ) {
+                verticalAlignment = Alignment.Top) {
                 // User Avatar
                 AsyncImage(model = userAvatarUrl,
-                    modifier = Modifier.size(48.dp).clip(CircleShape),
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape),
                     contentDescription = stringResource(R.string.profile_picture),
                     placeholder = painterResource(R.drawable.outline_account_circle),
                     error = painterResource(id = R.drawable.outline_account_circle)
@@ -160,14 +188,10 @@ fun CreatePostScreen(
 
                 Spacer(modifier = Modifier.width(12.dp))
 
-                Column() {
+                Column {
                     // The Text
                     BasicTextField(value = postText,
-                        onValueChange = {
-                            if (it.length <= 500) {
-                                postText = it
-                            }
-                        },
+                        onValueChange = onPostTextChange,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 8.dp),
@@ -180,8 +204,7 @@ fun CreatePostScreen(
                         decorationBox = { innerTextField ->
                             Box {
                                 if (postText.isEmpty()) {
-                                    Text(
-                                        text = "What's happening?",
+                                    Text(text = "What's happening?",
                                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                                         fontSize = 18.sp
                                     )
@@ -190,8 +213,7 @@ fun CreatePostScreen(
                             }
                         }
                     )
-                    Text(
-                        text = "${postText.length} / 500",
+                    Text(text = "${postText.length} / 500",
                         color = if (postText.length == 500) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 12.sp,
                         modifier = Modifier
@@ -202,40 +224,57 @@ fun CreatePostScreen(
                 }
             }
             // Poll
-            if (postAttachments.pollOptions != emptyList<String>())
+            if (postAttachments.pollOptions.isNotEmpty()) {
                 FeedPollView(postAttachments.pollOptions, modifier = Modifier.padding(horizontal = 16.dp))
+            }
             // GIF
             if (postAttachments.gif != null) {
-                AsyncImage(model = postAttachments.gif,
-                    contentDescription = "Selected GIF",
-                    contentScale = ContentScale.FillWidth,
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth()
-                        .heightIn(max = 240.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                )
+                Box {
+                    // gif
+                    AsyncImage(model = postAttachments.gif,
+                        contentDescription = stringResource(R.string.selected_gif_accessibility),
+                        contentScale = ContentScale.FillWidth,
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth()
+                            .heightIn(max = 240.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                    )
+
+                    IconButton(onClick = onRemoveGif,
+                        modifier = Modifier.padding(16.dp)) {
+                        Icon(
+                            painterResource(R.drawable.ic_close),
+                            contentDescription = stringResource(R.string.remove)
+                        )
+                    }
+                }
             }
             // Images
             if (postAttachments.images.isNotEmpty()) {
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(bottom = 16.dp).fillMaxWidth().height(120.dp)
+                    modifier = Modifier
+                        .padding(bottom = 16.dp)
+                        .fillMaxWidth()
+                        .height(120.dp)
                 ) {
                     items(postAttachments.images) { uri ->
                         Box {
                             // The actual image
                             AsyncImage(
                                 model = uri,
-                                contentDescription = "Selected image",
+                                contentDescription = stringResource(R.string.selected_image_accessibility, 1),
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier.size(120.dp)
                             )
 
                             // X button
-                            IconButton(onClick = { viewModel.removeImage(uri) }) {
-                                Icon(painterResource(R.drawable.ic_close),
-                                    contentDescription = stringResource(R.string.cancel))
+                            IconButton(onClick = { onRemoveImage(uri) }) {
+                                Icon(
+                                    painterResource(R.drawable.ic_close),
+                                    contentDescription = stringResource(R.string.remove)
+                                )
                             }
                         }
                     }
@@ -249,7 +288,7 @@ fun CreatePostScreen(
                     showGifPicker = false
                 },
                 onGifSelected = { gif ->
-                    viewModel.setGif(gif)
+                    onGifSelected(gif)
                     showGifPicker = false
                 }
             )
@@ -259,7 +298,7 @@ fun CreatePostScreen(
                 },
                 onSelect = { pollList ->
                     showPollCreator = false
-                    viewModel.setPoll(pollList)
+                    onPollSelected(pollList)
                 }
             )
             showMapsSheet -> SimpleAlertDialog(
@@ -282,11 +321,15 @@ fun CreatePostScreen(
 }
 
 @Composable
-fun PostConflictsDialog(conflicts: List<AttachmentType>,
-                        onDismiss: () -> Unit,
-                        onConfirm: () -> Unit) {
-    val conflictsString = conflicts.joinToString {
-        it.toString()
+fun PostConflictsDialog(
+    conflicts: List<AttachmentType>,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    val conflictsString = conflicts.joinToString { conflictTxt ->
+        conflictTxt.name
+            .lowercase(Locale.getDefault())
+            .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
     }
     SimpleAlertDialog(
         title = stringResource(R.string.too_many_attachments),
@@ -304,8 +347,33 @@ fun PostConflictsDialog(conflicts: List<AttachmentType>,
 @Composable
 fun CreatePostScreenPreview() {
     EchoTheme {
-        CreatePostScreen("https://randomuser.me/api/portraits/med/men/1.jpg",
-            {}, {})
+        CreatePostScreenContent(
+            userAvatarUrl = "https://randomuser.me/api/portraits/med/men/1.jpg",
+            postText = "",
+            postAttachments = PostAttachments(),
+            onClose = {},
+            onPostClick = {}
+        )
+    }
+}
+
+@Preview(
+    name = "With Attachments",
+    showSystemUi = true,
+    uiMode = UI_MODE_NIGHT_YES
+)
+@Composable
+fun CreatePostScreenWithAttachmentsPreview() {
+    EchoTheme {
+        CreatePostScreenContent(
+            userAvatarUrl = "https://randomuser.me/api/portraits/med/men/1.jpg",
+            postText = "im giving away free gifs",
+            postAttachments = PostAttachments(
+                gif = "https://media.tenor.com/gZKgo82fLu0AAAAM/wink-yummy.gif"
+            ),
+            onClose = {},
+            onPostClick = {}
+        )
     }
 }
 

@@ -15,6 +15,14 @@ class CreatePostViewModel : ViewModel() {
     val postAttachmentsState = _postAttachmentsState.asStateFlow()
     var postText = mutableStateOf("")
 
+    private fun setPostText(newText: String) {
+        if (newText.length <= 500) {
+            postText.value = newText
+        }
+    }
+
+    fun onPostTextChange(newText: String) = setPostText(newText)
+
     // IMAGES
     fun setImages(newUris: List<String>) {
         val combined = (_postAttachmentsState.value.images + newUris).distinct()

@@ -1,5 +1,6 @@
 package com.echo.app.di
 
+import com.echo.app.feature.post.presentation.CreatePostViewModel
 import com.echo.app.shared.data.EchoApi
 import com.echo.app.shared.data.EchoExternalApi
 import com.echo.app.shared.network.ktorClient
@@ -14,4 +15,7 @@ val appModule = module {
     singleOf(::EchoApi)
 
     viewModelOf(::GifBottomSheetViewModel)
+
+    // Posts
+    viewModelOf(::CreatePostViewModel)
 }

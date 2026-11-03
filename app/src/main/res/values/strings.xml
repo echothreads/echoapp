@@ -50,10 +50,13 @@
     <string name="read">Seen</string>
 
     <!-- Post Screen -->
+    <string name="post_screen_title">New Post</string>
     <string name="add_picture">Add Picture</string>
     <string name="add_poll">Add Poll</string>
     <string name="add_gif">Add GIF</string>
     <string name="add_location">Add Location</string>
     <string name="too_many_attachments">Too many attachments!</string>
     <string name="too_many_attachments_message">Your post has too many attachments and the following will be removed if you continue:\n%1$s</string>
+    <string name="selected_gif_accessibility">Selected GIF</string>
+    <string name="selected_image_accessibility">Selected image %d</string>
 </resources>
