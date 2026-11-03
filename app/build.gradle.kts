@@ -16,15 +16,13 @@ plugins {
 android {
     namespace = "com.echo.app"
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
+        version = release(37)
     }
 
     defaultConfig {
         applicationId = "com.echo.app"
         minSdk = 29
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
@@ -70,6 +68,7 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.client.okhttp)
     implementation(libs.coil.compose)
+    implementation(libs.coil.gif)
     implementation(libs.coil.network.ktor3)
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.android)
