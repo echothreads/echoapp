@@ -20,4 +20,8 @@
     <string name="poll_option">Option %1$d</string>
     <string name="add_option">Add Option</string>
     <string name="create">Create</string>
+
+    <!-- Full Screen Image Viewer -->
+    <string name="image_copied">Image Copied</string>
+    <string name="image_not_in_cache">Image not in cache yet</string>
 </resources>
