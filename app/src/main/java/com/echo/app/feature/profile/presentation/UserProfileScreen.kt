@@ -70,6 +70,7 @@ import com.echo.app.Utils
 import com.echo.app.feature.feed.presentation.FeedCard
 import com.echo.app.feature.profile.data.ProfileDto
 import com.echo.app.ui.theme.EchoTheme
+import com.echo.app.ui.widgets.FollowButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -284,31 +285,8 @@ fun ProfileHeader(user: ProfileDto) {
                     fontSize = 14.sp)
             }
 
-            if (!user.followed) {
-                TextButton(onClick = {},
-                    modifier = Modifier.padding(start = 8.dp, end = 12.dp),
-                    shape = RoundedCornerShape(50),
-                    colors = ButtonDefaults.textButtonColors(containerColor = MaterialTheme.colorScheme.primary)
-                ) {
-                    Text(stringResource(R.string.follow),
-                        modifier = Modifier.padding(4.dp),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
-                }
-            } else {
-                TextButton(onClick = {},
-                    modifier = Modifier.padding(start = 8.dp, end = 16.dp),
-                    shape = RoundedCornerShape(50),
-                    colors = ButtonDefaults.textButtonColors(containerColor = MaterialTheme.colorScheme.primary)
-                ) {
-                    Text(stringResource(R.string.unfollow),
-                        modifier = Modifier.padding(4.dp),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
-                }
-            }
+            FollowButton(modifier = Modifier.padding(start = 8.dp, end = 16.dp),
+                followed = user.followed, onFollow = {})
         }
         // Bio, needs to be limited to 6 lines serverside
         Text(user.bio,
@@ -438,6 +416,9 @@ fun ContentTabSelector(
 @Preview(
     showSystemUi = true,
     uiMode = UI_MODE_NIGHT_YES
+)
+@Preview(
+    showSystemUi = true
 )
 @Composable
 fun UserProfileScreenPreview() {

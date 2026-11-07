@@ -14,6 +14,10 @@
     <string name="amplified_ui">Amplified by %1$s</string>
     <string name="reply_icon">Reply Icon</string>
     <string name="post_reply_to_ui">Reply to %1$s</string>
+    
+    <!-- Search Screen -->
+    <string name="suggested_for_you">Suggested for you</string>
+    <string name="trending_posts">Trending Echoes</string>
 
     <!-- User Profile -->
     <string name="profile_picture">Profile Picture</string>
